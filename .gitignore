@@ -126,3 +126,10 @@ venv.bak/
 
 # Cython debug symbols
 cython_debug/
+
+# Python Test
+test.py
+
+# IDEA and vscode
+.idea/
+
