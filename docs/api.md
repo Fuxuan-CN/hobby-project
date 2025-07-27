@@ -1,64 +1,71 @@
 # 接口文档（API DOC）
 
+## 鉴权
+
+### 注册请求
+
+- POST /auth/register/request
+- 参数：email
+- 返回：{ 200, "ok", null }
+
+### 注册确认
+- POST /auth/register/confirm
+- 参数：email code hobbys
+- 返回：{ 200, "ok", token: {xxx} }
+
 ## 用户模块
-
-### 注册
-
-- POST /api/users/register
-- 参数：username, password, email, phone
-- 返回：{ code, message, data: { user_id } }
-
 ### 登录
 
-- POST /api/users/login
+- POST /user/login
 - 参数：username/email/phone, password
-- 返回：{ code, message, data: { token, user_info } }
+- 返回：{ 200, "ok", token: {xxx} }
 
 ### 获取用户信息
 
-- GET /api/users/{user_id}
+- GET /user/{user_id}
 - 返回：{ code, message, data: { ...user } }
 
 ### 更新用户信息
 
-- PUT /api/users/{user_id}
-- 参数：nickname, email, phone, ...
+- PUT /user/{user_id}
+- 参数：nickname, ...
 - 返回：{ code, message }
+- 备注：保留email和phone更新需要认证的需求
 
 ## 兴趣与分类模块
 
 ### 获取兴趣分类列表
 
-- GET /api/hobby-categories
-- 返回：{ code, message, data: [ { category_id, title } ] }
+- GET /hobby-category
+- 返回：{ code, message, data: [ ...hobby-category ] }
 
 ### 获取兴趣列表
 
-- GET /api/hobbies?category_id=1
-- 返回：{ code, message, data: [ { hobby_id, title, description, is_hot } ] }
+- GET /hobby?category_id=1
+- 返回：{ code, message, data: [ ...hobby ] }
 
 ## 群聊模块
 
 ### 创建群聊
 
-- POST /api/groups
+- POST /group
 - 参数：name, description, avatar_url, join_verify, max_member_count
 - 返回：{ code, message, data: { group_id } }
 
 ### 获取群聊信息
 
-- GET /api/groups/{group_id}
+- GET /group/{group_id}
 - 返回：{ code, message, data: { ...group } }
 
 ### 申请加入群聊
 
-- POST /api/groups/{group_id}/join
+- POST /group/{group_id}/join
 - 参数：notes
 - 返回：{ code, message }
 
 ### 审批加群请求
 
-- POST /api/group-requests/{request_id}/handle
+- POST /group-request/{request_id}/handle
 - 参数：status (accepted/rejected), reject_reason
 - 返回：{ code, message }
 
@@ -66,35 +73,35 @@
 
 ### 发送好友请求
 
-- POST /api/friends/request
+- POST /friend/request
 - 参数：receiver_id, notes
 - 返回：{ code, message }
 
 ### 处理好友请求
 
-- POST /api/friend-requests/{request_id}/handle
+- POST /friend-request/{request_id}/handle
 - 参数：status (accepted/rejected), reject_reason
 - 返回：{ code, message }
 
 ### 获取好友列表
 
-- GET /api/friends
+- GET /friend
 - 返回：{ code, message, data: [ { user_id, nickname, remark_name } ] }
 
 ## 通知模块
 
 ### 获取通知列表
 
-- GET /api/notifications
+- GET /notification
 - 返回：{ code, message, data: [ { notification_id, type, content, is_read, send_at } ] }
 
 ### 标记通知为已读
 
-- POST /api/notifications/{notification_id}/read
+- POST /notification/{notification_id}/read
 - 返回：{ code, message }
 
 ## 通用返回格式
 
-- code: 状态码（0成功，非0失败）
-- message: 提示信息
+- code: 状态码（200成功，非200失败）
+- msg: 提示信息
 - data: 业务数据
