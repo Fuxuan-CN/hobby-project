@@ -10,7 +10,7 @@ class RedisClient:
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             db=settings.REDIS_DB,
-            decode_responses=True  # 自动解码为字符串
+            decode_responses=True # 自动解码为字符串
         )
 
     def set(self, key: str, value: Union[str, dict, list],
@@ -33,7 +33,7 @@ class RedisClient:
         except Exception as e:
             return False
 
-    def get(self, key: str, is_json: bool = False) -> Optional[Union[str, dict, list]]:
+    async def get(self, key: str, is_json: bool = False) -> Optional[Union[str, dict, list]]:
         """
         获取键值
 
@@ -42,7 +42,7 @@ class RedisClient:
         :return: 对应的值，不存在返回None
         """
         try:
-            value = self.client.get(key)
+            value = await self.client.get(key)
             if value is None:
                 return None
             if is_json:
@@ -51,7 +51,7 @@ class RedisClient:
         except Exception as e:
             return None
 
-    def delete(self, key: str) -> bool:
+    async def delete(self, key: str) -> bool:
         """
         删除键
 
@@ -59,12 +59,12 @@ class RedisClient:
         :return: 是否成功
         """
         try:
-            result = self.client.delete(key)
+            result = await self.client.delete(key)
             return result > 0
         except Exception as e:
             return False
 
-    def hset(self, name: str, key: str, value: Union[str, dict, list]) -> bool:
+    async def hset(self, name: str, key: str, value: Union[str, dict, list]) -> bool:
         """
         设置哈希表字段
 
@@ -77,12 +77,12 @@ class RedisClient:
             if isinstance(value, (dict, list)):
                 value = json.dumps(value)
 
-            result = self.client.hset(name, key, value)
+            result = await self.client.hset(name, key, value) # type: ignore
             return result >= 0
         except Exception as e:
             return False
 
-    def hget(self, name: str, key: str, is_json: bool = False) -> Optional[
+    async def hget(self, name: str, key: str, is_json: bool = False) -> Optional[
         Union[str, dict, list]]:
         """
         获取哈希表字段值
@@ -93,7 +93,7 @@ class RedisClient:
         :return: 字段值，不存在返回None
         """
         try:
-            value = self.client.hget(name, key)
+            value = await self.client.hget(name, key) # type: ignore
             if value is None:
                 return None
 
@@ -103,7 +103,7 @@ class RedisClient:
         except Exception as e:
             return None
 
-    def hgetall(self, name: str, is_json: bool = False) -> Dict[
+    async def hgetall(self, name: str, is_json: bool = False) -> Dict[
         str, Union[str, dict, list]]:
         """
         获取哈希表所有字段和值
@@ -113,14 +113,14 @@ class RedisClient:
         :return: 包含所有字段和值的字典
         """
         try:
-            items = self.client.hgetall(name)
+            items = await self.client.hgetall(name) # type: ignore
             if is_json and items:
                 return {k: json.loads(v) for k, v in items.items()}
             return items
         except Exception as e:
             return {}
 
-    def lpush(self, name: str, *values: Union[str, dict, list]) -> int:
+    async def lpush(self, name: str, *values: Union[str, dict, list]) -> int:
         """
         向列表左侧添加元素
 
@@ -136,11 +136,11 @@ class RedisClient:
                 else:
                     processed_values.append(str(v))
 
-            return self.client.lpush(name, *processed_values)
+            return await self.client.lpush(name, *processed_values) # type: ignore
         except Exception as e:
             return 0
 
-    def rpop(self, name: str, is_json: bool = False) -> Optional[
+    async def rpop(self, name: str, is_json: bool = False) -> Optional[
         Union[str, dict, list]]:
         """
         从列表右侧弹出元素
@@ -150,17 +150,17 @@ class RedisClient:
         :return: 弹出的元素
         """
         try:
-            value = self.client.rpop(name)
+            value = await self.client.rpop(name) # type: ignore
             if value is None:
                 return None
 
             if is_json:
-                return json.loads(value)
+                return json.loads(value) # type: ignore
             return value
         except Exception as e:
             return None
 
-    def expire(self, key: str, seconds: int) -> bool:
+    async def expire(self, key: str, seconds: int) -> bool:
         """
         设置键的过期时间
 
@@ -169,11 +169,11 @@ class RedisClient:
         :return: 是否成功
         """
         try:
-            return self.client.expire(key, seconds)
+            return await self.client.expire(key, seconds)
         except Exception as e:
             return False
 
-    def exists(self, key: str) -> bool:
+    async def exists(self, key: str) -> bool:
         """
         检查键是否存在
 
@@ -181,7 +181,7 @@ class RedisClient:
         :return: 是否存在
         """
         try:
-            return self.client.exists(key) > 0
+            return await self.client.exists(key) > 0
         except Exception as e:
             return False
 

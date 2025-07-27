@@ -6,9 +6,9 @@ from core.config import settings
 # 创建数据库引擎
 engine = create_engine(
     settings.DATABASE_URL,
-    echo=True,  # 生产环境设为False，避免打印SQL日志
-    pool_pre_ping=True,  # 连接前检查有效性
-    pool_recycle=300  # 连接5分钟后自动回收，避免PostgreSQL连接超时
+    echo=settings.SQLALCHEMY_LOG,
+    pool_pre_ping=settings.POOL_PRE_PING,
+    pool_recycle=settings.POOL_RECYCLE
 )
 
 # 创建会话工厂

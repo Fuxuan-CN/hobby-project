@@ -2,17 +2,17 @@
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user`
 (
-    user_id       BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户唯一标识',
-    username      VARCHAR(64)     NOT NULL COMMENT '用户名（唯一）',
-    password      VARCHAR(128)    NOT NULL COMMENT '加密后的密码',
-    nickname      VARCHAR(64)              DEFAULT NULL COMMENT '用户昵称',
-    email         VARCHAR(128)    NOT NULL COMMENT '电子邮箱（唯一）',
-    phone         VARCHAR(32)              DEFAULT NULL COMMENT '手机号码',
-    last_login_at DATETIME                 DEFAULT NULL COMMENT '最后登录时间',
-    is_active     TINYINT(1)      NOT NULL DEFAULT 1 COMMENT '是否激活 0-未激活 1-已激活',
-    is_deleted    TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
-    created_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    updated_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    user_id       char(32)     NOT NULL COMMENT '用户唯一标识 无连字符uuid',
+    username      VARCHAR(64)  NOT NULL COMMENT '用户名（唯一）',
+    password      VARCHAR(128) NOT NULL COMMENT '加密后的密码',
+    nickname      VARCHAR(64)  NOT NULL COMMENT '用户昵称',
+    email         VARCHAR(128) NOT NULL COMMENT '电子邮箱（唯一）',
+    phone         VARCHAR(32)  NOT NULL DEFAULT '' COMMENT '手机号码',
+    last_login_at DATETIME              DEFAULT NULL COMMENT '最后登录时间',
+    is_active     TINYINT(1)   NOT NULL DEFAULT 1 COMMENT '是否激活 0-未激活 1-已激活',
+    is_deleted    TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
+    created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (user_id),
     UNIQUE KEY uk_username (username),
     UNIQUE KEY uk_email (email),
@@ -25,12 +25,12 @@ DROP TABLE IF EXISTS `user_info`;
 CREATE TABLE `user_info`
 (
     user_info_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '信息记录唯一标识',
-    user_id      BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
-    age          INT                      DEFAULT NULL COMMENT '年龄',
-    gender       VARCHAR(8)               DEFAULT NULL COMMENT '性别',
-    avatar_url   VARCHAR(256)             DEFAULT NULL COMMENT '头像链接',
+    user_id      char(32)        NOT NULL COMMENT '用户ID',
+    age          INT             NOT NULL DEFAULT 0 COMMENT '年龄',
+    gender       VARCHAR(8)      NOT NULL DEFAULT '' COMMENT '性别 male-男 female-女',
+    avatar_url   VARCHAR(256)    NOT NULL DEFAULT '' COMMENT '头像链接',
     birthday     DATE                     DEFAULT NULL COMMENT '出生日期',
-    region       VARCHAR(128)             DEFAULT NULL COMMENT '所在地区',
+    region       VARCHAR(128)    NOT NULL DEFAULT '' COMMENT '所在地区',
     bio          TEXT                     DEFAULT NULL COMMENT '个人简介',
     is_deleted   TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
     created_at   DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -47,7 +47,7 @@ CREATE TABLE `chat_group`
     group_id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '群聊唯一标识',
     name             VARCHAR(64)     NOT NULL COMMENT '群聊名称',
     description      TEXT                     DEFAULT NULL COMMENT '群描述',
-    avatar_url       VARCHAR(256)             DEFAULT NULL COMMENT '群头像',
+    avatar_url       VARCHAR(256)    NOT NULL DEFAULT '' COMMENT '群头像',
     creator_id       BIGINT UNSIGNED NOT NULL COMMENT '创建者ID',
     join_verify      TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '加入验证 0-不需要验证 1-需要验证',
     max_member_count INT             NOT NULL DEFAULT 200 COMMENT '最大成员数',
@@ -64,9 +64,9 @@ DROP TABLE IF EXISTS `user_group`;
 CREATE TABLE `user_group`
 (
     user_group_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
-    user_id       BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
+    user_id       char(32)        NOT NULL COMMENT '用户ID',
     group_id      BIGINT UNSIGNED NOT NULL COMMENT '群聊ID',
-    role          VARCHAR(16)              DEFAULT NULL COMMENT '用户身份',
+    role          VARCHAR(16)     NOT NULL COMMENT '用户身份 creator-群主 admin-管理员 user-普通用户',
     join_at       DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '加入时间',
     is_exited     TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否退出 0-未退出 1-已退出',
     exit_at       DATETIME                 DEFAULT NULL COMMENT '退出时间',
@@ -95,7 +95,7 @@ CREATE TABLE `hobby`
     created_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at        DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (hobby_id),
-    UNIQUE KEY uk_title (title)
+    UNIQUE KEY uk_title (hobby_category_id, title)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT = '兴趣爱好表';
 
@@ -190,15 +190,31 @@ VALUES (1, '篮球', '团队运动，锻炼身体协调性'),
        (19, '志愿服务', '帮助他人，回馈社会'),
        (19, '环保公益', '保护环境，人人有责');
 
+-- 用户-兴趣关联表
+DROP TABLE IF EXISTS `user_hobby`;
+CREATE TABLE `user_hobby`
+(
+    user_hobby_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '用户-兴趣唯一标识',
+    user_id       char(32)        NOT NULL COMMENT '用户ID',
+    hobby_id      BIGINT UNSIGNED NOT NULL COMMENT '兴趣ID',
+    is_deleted    TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
+    created_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (user_hobby_id),
+    KEY idx_user_id (user_id),
+    KEY idx_hobby_id (hobby_id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT = '用户爱好表';
+
 -- 好友关系表
 DROP TABLE IF EXISTS `friendship`;
 CREATE TABLE `friendship`
 (
     friendship_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '关系唯一标识',
-    user_id       BIGINT UNSIGNED NOT NULL COMMENT '用户ID',
+    user_id       char(32)        NOT NULL COMMENT '用户ID',
     friend_id     BIGINT UNSIGNED NOT NULL COMMENT '好友ID',
     friend_at     DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '成为好友时间',
-    remark_name   VARCHAR(64)              DEFAULT NULL COMMENT '好友备注',
+    remark_name   VARCHAR(64)     NOT NULL DEFAULT '' COMMENT '好友备注',
     is_deleted    TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
     created_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at    DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
@@ -207,7 +223,7 @@ CREATE TABLE `friendship`
     KEY idx_friend_id (friend_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT = '好友关系表';
-Updated schema.sql; created db_design.md, api.md, and PRD.md without checking
+
 -- 好友请求表
 DROP TABLE IF EXISTS `friend_request`;
 CREATE TABLE `friend_request`
@@ -256,11 +272,11 @@ DROP TABLE IF EXISTS `notification`;
 CREATE TABLE `notification`
 (
     notification_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '通知唯一标识',
-    user_id         BIGINT UNSIGNED NOT NULL COMMENT '接收通知的用户ID',
-    type            VARCHAR(32)     NOT NULL COMMENT '通知类型',
+    user_id         char(32)        NOT NULL COMMENT '接收通知的用户ID',
+    type            VARCHAR(32)     NOT NULL COMMENT '通知类型 friend-好友请求 group-群聊请求',
     content         TEXT                     DEFAULT NULL COMMENT '通知内容',
     is_read         TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已读 0-未读 1-已读',
-    related_id      BIGINT UNSIGNED          DEFAULT NULL COMMENT '关联ID, 如好友请求ID、群公告ID',
+    related_id      BIGINT UNSIGNED NOT NULL COMMENT '关联ID, 如好友请求ID、群公告ID',
     send_at         DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发送时间',
     is_deleted      TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
     created_at      DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
