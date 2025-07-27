@@ -19,7 +19,7 @@ log_file_path = log_dir / log_file_name
 # 配置 loguru 日志
 logger.add(
     log_file_path,
-    format="<level>{time:YYYY-MM-DD HH:mm:ss} | {thread.name} | {level:<8} {module} {file.name}:{line} ===> {message}</level>",
+    format="<level>{time:YYYY-MM-DD HH:mm:ss} | {thread.name} | {level:<8} | {module} | {file.name}:{line} | {message}</level>",
     level="DEBUG",
     rotation="1 week",
     compression="zip",
