@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr, Field
 
 class UserBase(BaseModel):
-    user_id: int
+    user_id: str = Field(..., max_length=32)
     username: str = Field(..., max_length=64)
     password: str = Field(..., max_length=128)
     nickname: Optional[str] = Field(None, max_length=64)

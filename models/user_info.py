@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 class UserInfoBase(BaseModel):
     user_info_id: int
-    user_id: int
+    user_id: str = Field(..., max_length=32)
     age: Optional[int] = None
     gender: Optional[str] = Field(None, max_length=8)
     avatar_url: Optional[str] = Field(None, max_length=256)
