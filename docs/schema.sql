@@ -207,7 +207,7 @@ CREATE TABLE `friendship`
     KEY idx_friend_id (friend_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT = '好友关系表';
-
+Updated schema.sql; created db_design.md, api.md, and PRD.md without checking
 -- 好友请求表
 DROP TABLE IF EXISTS `friend_request`;
 CREATE TABLE `friend_request`
