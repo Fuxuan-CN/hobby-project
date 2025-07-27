@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     DB_PASSWORD: str = ""
     DB_NAME: str = "hobby"
 
+    # sqlalchemy 配置
+    SQLALCHEMY_LOG: bool = True # 生产环境设为False，避免打印SQL日志
+    POOL_PRE_PING: bool = True # 连接前检查连接有效性
+    POOL_RECYCLE: int = 300 # 连接5分钟后自动回收，避免PostgreSQL连接超时
+
     # redis配置
     REDIS_HOST: str = "127.0.0.1"
     REDIS_PORT: int = 6379
