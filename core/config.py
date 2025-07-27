@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     # redis配置
     REDIS_HOST: str = "127.0.0.1"
     REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
     REDIS_PASSWORD: str = ""
     # rocketmq配置
     ROCKETMQ_GROUP: str = "hobby_group"
