@@ -1,0 +1,3 @@
+[submodule "hobby-front"]
+	path = hobby-front
+	url = https://github.com/Fuxuan-CN/hobby-front.git
