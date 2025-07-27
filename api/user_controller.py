@@ -3,11 +3,12 @@ from typing import Literal
 from fastapi import APIRouter
 from fastapi import HTTPException
 from services.user_service import UserService
+from models.result import Result
 
 user_router = APIRouter(prefix="/user", tags=["用户模块"])
 
 @user_router.post("/login")
-async def login(login_type: Literal['username', 'email', 'phone'], account: str, password: str) -> str:
+async def login(login_type: Literal['username', 'email', 'phone'], account: str, password: str) -> Result[str]:
     """ 登录 """
     match login_type:
         case "username":
