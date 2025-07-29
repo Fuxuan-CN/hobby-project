@@ -12,7 +12,7 @@ class UserService:
     @staticmethod
     async def login_with_phone(phone: str, password: str) -> Result[str]:
         """ 用 phone 方法登录 """
-        return Result.success(f"phone: {phone}, password: {phone}")
+        return Result.success(f"phone: {phone}, password: {password}")
 
     @staticmethod
     async def login_with_email(email: str, password: str) -> Result[str]:
