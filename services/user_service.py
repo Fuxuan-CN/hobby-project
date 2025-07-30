@@ -1,5 +1,6 @@
 
 from models.result import Result
+from models.user import UserBase
 
 class UserService:
     """ 用户服务 """
@@ -18,3 +19,13 @@ class UserService:
     async def login_with_email(email: str, password: str) -> Result[str]:
         """ 用 email 方法登录 """
         return Result.success(f"email: {email}, password: {password}")
+    
+    @staticmethod
+    async def get_user_info(user_id: int) -> Result[UserBase]:
+        """ 获取用户信息 """
+        ...
+
+    @staticmethod
+    async def update_user_info(user_id: str, user_data: UserBase) -> Result[None]:
+        """ 设置用户信息 """
+        ...
