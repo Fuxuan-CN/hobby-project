@@ -1,6 +1,7 @@
 
 from models.result import Result
 from models.user import UserBase
+from DAO.user_dao import UserDAO
 
 class UserService:
     """ 用户服务 """
