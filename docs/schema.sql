@@ -162,6 +162,41 @@ CREATE TABLE `friendship`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT = '好友关系表';
 
+-- 好友分组表
+DROP TABLE IF EXISTS `friend_group`;
+CREATE TABLE `friend_group`
+(
+    group_id   BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '分组唯一标识',
+    user_id    CHAR(32)        NOT NULL COMMENT '所属用户ID（分组的创建者）',
+    group_name VARCHAR(64)     NOT NULL COMMENT '分组名称（如“家人”“同事”）',
+    sort_order INT             NOT NULL DEFAULT 0 COMMENT '分组排序权重（值越大越靠前）',
+    is_deleted TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
+    created_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (group_id),
+    KEY idx_user_id (user_id),
+    KEY idx_user_deleted (user_id, is_deleted),
+    UNIQUE KEY uk_user_group_name (user_id, group_name)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT '好友分组信息表';
+
+DROP TABLE IF EXISTS `friend_in_group`;
+CREATE TABLE `friend_in_group`
+(
+    relation_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '关联关系唯一标识',
+    user_id     CHAR(32)        NOT NULL COMMENT '所属用户ID（分组的创建者）',
+    group_id    BIGINT UNSIGNED NOT NULL COMMENT '分组ID（关联friend_group表）',
+    friend_id   CHAR(32)        NOT NULL COMMENT '好友ID（关联friendship表的friend_id）',
+    is_deleted  TINYINT(1)      NOT NULL DEFAULT 0 COMMENT '是否已删除 0-未删除 1-已删除',
+    created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (relation_id),
+    KEY idx_user_group (user_id, group_id),
+    KEY idx_user_friend (user_id, friend_id),
+    UNIQUE KEY uk_user_group_friend (user_id, group_id, friend_id) COMMENT '同一好友在同一分组中仅能存在一次'
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT '好友与分组的关联关系表';
+
 -- 好友请求表
 DROP TABLE IF EXISTS `friend_request`;
 CREATE TABLE `friend_request`
